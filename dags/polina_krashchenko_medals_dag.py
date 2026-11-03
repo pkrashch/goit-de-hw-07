@@ -1,12 +1,12 @@
 """ДЗ7. Apache Airflow: DAG з розгалуженням, затримкою та SQL-сенсором.
 
-1. create_table      — створює таблицю (IF NOT EXISTS) для результатів
-2. pick_medal        — випадково обирає Bronze / Silver / Gold
-3. pick_medal_task   — розгалуження: запускає одне з трьох завдань
+1. create_table           — створює таблицю (IF NOT EXISTS) для результатів
+2. pick_medal             — випадково обирає Bronze / Silver / Gold
+3. pick_medal_task        — розгалуження: запускає одне з трьох завдань
 4. calc_Bronze / calc_Silver / calc_Gold — рахує медалі в
    olympic_dataset.athlete_event_results і записує результат у таблицю
-5. generate_delay    — затримка (time.sleep), якщо одне з завдань виконано успішно
-6. check_for_correctness — сенсор: найновіший запис не старший за 30 секунд
+5. generate_delay         — затримка (time.sleep), якщо одне з завдань виконано успішно
+6. check_for_correctness  — сенсор: найновіший запис не старший за 30 секунд
 """
 import random
 import time
@@ -15,11 +15,12 @@ from datetime import datetime
 from airflow import DAG
 from airflow.models.param import Param
 from airflow.operators.python import BranchPythonOperator, PythonOperator
-from airflow.providers.mysql.operators.mysql import MySqlOperator
-from airflow.sensors.sql import SqlSensor
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
+from airflow.providers.common.sql.sensors.sql import SqlSensor
 from airflow.utils.trigger_rule import TriggerRule
 
-MYSQL_CONN_ID = "goit_mysql_db_polina_krashchenko"
+# Підключення задається змінною середовища AIRFLOW_CONN_GOIT_MYSQL_DB (docker-compose.yml)
+MYSQL_CONN_ID = "goit_mysql_db"
 SCHEMA = "polina_krashchenko"
 TABLE = f"{SCHEMA}.medal_counts"
 SOURCE_TABLE = "olympic_dataset.athlete_event_results"
@@ -63,9 +64,9 @@ with DAG(
 ) as dag:
 
     # 1. Створення схеми й таблиці
-    create_table = MySqlOperator(
+    create_table = SQLExecuteQueryOperator(
         task_id="create_table",
-        mysql_conn_id=MYSQL_CONN_ID,
+        conn_id=MYSQL_CONN_ID,
         sql=[
             f"CREATE DATABASE IF NOT EXISTS {SCHEMA};",
             f"""
@@ -93,9 +94,9 @@ with DAG(
 
     # 4. Три завдання підрахунку
     calc_tasks = [
-        MySqlOperator(
+        SQLExecuteQueryOperator(
             task_id=f"calc_{medal}",
-            mysql_conn_id=MYSQL_CONN_ID,
+            conn_id=MYSQL_CONN_ID,
             sql=f"""
             INSERT INTO {TABLE} (medal_type, count, created_at)
             SELECT '{medal}', COUNT(*), NOW()
