@@ -39,3 +39,23 @@ UI: http://localhost:8080 (логін `admin`).
 ```bash
 docker compose exec mysql mysql -uairflow -pairflow -e "SELECT * FROM polina_krashchenko.medal_counts;"
 ```
+
+## Скриншоти
+
+### Список DAG-ів: перший запуск успішний
+![dags](screenshots/p0_dags_list.png)
+
+### Запуск із затримкою 20 с — success
+![run](screenshots/p1_dag_run_success.png)
+
+### Grid: два запуски (20 с — success, 35 с — сенсор failed)
+![grid](screenshots/p2_grid_two_runs.png)
+
+### Graph: затримка 20 с — обрано Bronze, сенсор success
+![graph ok](screenshots/p3_graph_success_20s.png)
+
+### Graph: затримка 35 с — обрано Gold, сенсор failed
+![graph failed](screenshots/p4_graph_failed_35s.png)
+
+### Таблиця результатів `polina_krashchenko.medal_counts`
+![table](screenshots/p5_results_table.png)
