@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS athlete_event_results (
     isTeamSport  VARCHAR(10)
 );
 
-LOAD DATA INFILE '/var/lib/mysql-files/athlete_event_results.csv'
+LOAD DATA INFILE '/data/athlete_event_results.csv'
 INTO TABLE athlete_event_results
 CHARACTER SET utf8mb4
 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"'

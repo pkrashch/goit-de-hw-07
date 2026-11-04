@@ -1,6 +1,7 @@
 services:
   mysql:
     image: mysql:8.0
+    command: --secure-file-priv=/data
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: olympic_dataset
@@ -8,7 +9,7 @@ services:
       MYSQL_PASSWORD: airflow
     volumes:
       - ./mysql-init:/docker-entrypoint-initdb.d:ro
-      - ./data/athlete_event_results.csv:/var/lib/mysql-files/athlete_event_results.csv:ro
+      - ./data:/data:ro
       - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
