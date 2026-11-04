@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: airflow
     volumes:
       - ./mysql-init:/docker-entrypoint-initdb.d:ro
-      - ./data:/data:ro
+      - ./data:/data
       - mysql_data:/var/lib/mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
